@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewmport" content="width=device-width, initial-scale=1.0">
+    <title> Visualization Lab</title>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
+    
+    <style>
+        model-viewer {width: 800px; height:600px; margin:0, auto}
+    </style>
+    <style  type="text/css">
+            .view-button {
+            background: #fff;
+            border-radius: 4px;
+            border: none;
+            box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
+            color: rgba(0, 0, 0, 0.8);
+            display: block;
+            font-family: Futura, Helvetica Neue, sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            max-width: 128px;
+            overflow-wrap: break-word;
+            padding: 0.5em 1em;
+            position: absolute;
+            width: max-content;
+            height: max-content;
+            transform:translate3d(-50%, -50%, 0);
+          }
+    </style>
+</head>
+<body>
+    <model-viewer 
+    id="Brain-camera-view"
+    alt="Brain" 
+    src="assests/models/Brain2.glb" ar ios src="assests/models/Brain.usdz"
+    shadow-intensity="1" 
+    skybox-image="assests/Op.png"
+    camera-controls touch-action="pan-y"
+    camera-orbit="-8.142746deg 80deg 200m" 
+    camera-target="1m 0.07m 200m" 
+    field-of-view="45deg" 
+    min-field-of-view="25deg" 
+    max-field-of-view="45deg" 
+    interpolation-decay="200"
+    min-camera-orbit="auto auto 5%"
+    xr-environment>
+    <button class="Hotspot" slot="hotspot-1" 
+        data-position="44.846123210464896m -17.5058028340016m 52.007572538258216m" 
+        data-normal="0.5802178864978054m 0.3561804466197153m 0.732449789155407m"
+        data-orbit="50.94862deg 84.56856deg 300m" 
+        data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">Left Hemisphere</div>
+    </button><button class="Hotspot" slot="hotspot-2" 
+        data-position="-2.0404534700851737m -140.9649154417384m 0.7843757940213436m"
+        data-normal="0.010415122921684656m 0.13575987385229632m 0.9906870251830974m"
+        data-orbit="0deg 90deg 150.335197m"
+        data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">Brain Stem</div>
+    </button><button class="Hotspot" slot="hotspot-3"
+        data-position="-57.323473629452735m -11.747836848431021m -4.9687700125955185m" 
+        data-normal="-0.9741858789651724m 0.144221724904277m 0.17367201067094706m"
+        data-orbit="-50.94862deg 86.56856deg 300m" 
+        data-visibility-attribute="visible">
+        <div class="HotspotAnnotation">Right Hemisphere</div>
+    </button>
+    <div class="progress-bar hide" slot="progress-bar">
+        <div class="update-bar"></div>
+    </div>
+    <button slot="ar-button" id="ar-button">
+        View in your space
+    </button>
+    <div id="ar-prompt">
+        </div>
+    </model-viewer>
+    <script type="module">
+        const modelViewer2 = document.querySelector("#Brain-camera-view");
+        const annotationClicked = (annotation) => {
+          let dataset = annotation.dataset;
+          modelViewer2.cameraTarget = dataset.target;
+          modelViewer2.cameraOrbit = dataset.orbit;
+          modelViewer2.fieldOfView = '45deg';
+        }
+      
+        modelViewer2.querySelectorAll('button').forEach((hotspot) => {
+          hotspot.addEventListener('click', () => annotationClicked(hotspot));
+        });
+      </script>
+</body>
+
+    
+</html>
