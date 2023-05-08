@@ -1,17 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
     <meta name="viewmport" content="width=device-width, initial-scale=1.0">
     <title> Visualization Lab</title>
     <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
     
     <style>
-        model-viewer {width: 800px; height:600px; margin:0, auto}
+        model-viewer {width: 100vw; height:100vh; margin:0, auto}
     </style>
+
+     
     <style  type="text/css">
             .view-button {
-            background: #fff;
+            background: #000000;
             border-radius: 4px;
             border: none;
             box-sizing: border-box;
@@ -32,12 +35,13 @@
     </style>
 </head>
 <body>
+   
     <model-viewer 
     id="Brain-camera-view"
     alt="Brain" 
-    src="assests/models/Brain2.glb" ar ios src="assests/models/Brain.usdz"
+    src="assests/models/Brain_with_textures.glb" ar ios src="assests/models/brain_with_textures.usdz"
     shadow-intensity="1" 
-    skybox-image="assests/Op.png"
+    skybox-image=""
     camera-controls touch-action="pan-y"
     camera-orbit="-8.142746deg 80deg 200m" 
     camera-target="1m 0.07m 200m" 
@@ -46,7 +50,10 @@
     max-field-of-view="45deg" 
     interpolation-decay="200"
     min-camera-orbit="auto auto 5%"
-    xr-environment>
+    xr-environment
+    ar
+    ar-modes="webxr scene-viewer quick-look"
+    quick-look-browsers="chrome">
     <button class="Hotspot" slot="hotspot-1" 
         data-position="44.846123210464896m -17.5058028340016m 52.007572538258216m" 
         data-normal="0.5802178864978054m 0.3561804466197153m 0.732449789155407m"
@@ -75,6 +82,7 @@
     <div id="ar-prompt">
         </div>
     </model-viewer>
+   
     <script type="module">
         const modelViewer2 = document.querySelector("#Brain-camera-view");
         const annotationClicked = (annotation) => {
