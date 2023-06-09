@@ -1,102 +1,77 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta charset="UTF-8">
-    <meta name="viewmport" content="width=device-width, initial-scale=1.0">
-    <title> Visualization Lab</title>
-    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.1.1/model-viewer.min.js"></script>
-    
-    <style>
-        model-viewer {width: 100vw; height:100vh; margin:0, auto}
-    </style>
-
-     
-    <style  type="text/css">
-            .view-button {
-            background: #000000;
-            border-radius: 4px;
-            border: none;
-            box-sizing: border-box;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.25);
-            color: rgba(0, 0, 0, 0.8);
-            display: block;
-            font-family: Futura, Helvetica Neue, sans-serif;
-            font-size: 12px;
-            font-weight: 700;
-            max-width: 128px;
-            overflow-wrap: break-word;
-            padding: 0.5em 1em;
-            position: absolute;
-            width: max-content;
-            height: max-content;
-            transform:translate3d(-50%, -50%, 0);
-          }
-    </style>
+  <title>Three.JS Tutorial: Loading Models</title>
+  <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="base.css">
 </head>
 <body>
-   
-    <model-viewer 
-    id="Brain-camera-view"
-    alt="Brain" 
-    src="assests/models/Brain_with_textures.glb" ar ios src="assests/models/brain_with_textures.usdz"
-    shadow-intensity="1" 
-    skybox-image=""
-    camera-controls touch-action="pan-y"
-    camera-orbit="-8.142746deg 80deg 200m" 
-    camera-target="1m 0.07m 200m" 
-    field-of-view="45deg" 
-    min-field-of-view="25deg" 
-    max-field-of-view="45deg" 
-    interpolation-decay="200"
-    min-camera-orbit="auto auto 5%"
-    xr-environment
-    ar
-    ar-modes="webxr scene-viewer quick-look"
-    quick-look-browsers="chrome">
-    <button class="Hotspot" slot="hotspot-1" 
-        data-position="44.846123210464896m -17.5058028340016m 52.007572538258216m" 
-        data-normal="0.5802178864978054m 0.3561804466197153m 0.732449789155407m"
-        data-orbit="50.94862deg 84.56856deg 300m" 
-        data-visibility-attribute="visible">
-        <div class="HotspotAnnotation">Left Hemisphere</div>
-    </button><button class="Hotspot" slot="hotspot-2" 
-        data-position="-2.0404534700851737m -140.9649154417384m 0.7843757940213436m"
-        data-normal="0.010415122921684656m 0.13575987385229632m 0.9906870251830974m"
-        data-orbit="0deg 90deg 150.335197m"
-        data-visibility-attribute="visible">
-        <div class="HotspotAnnotation">Brain Stem</div>
-    </button><button class="Hotspot" slot="hotspot-3"
-        data-position="-57.323473629452735m -11.747836848431021m -4.9687700125955185m" 
-        data-normal="-0.9741858789651724m 0.144221724904277m 0.17367201067094706m"
-        data-orbit="-50.94862deg 86.56856deg 300m" 
-        data-visibility-attribute="visible">
-        <div class="HotspotAnnotation">Right Hemisphere</div>
-    </button>
-    <div class="progress-bar hide" slot="progress-bar">
-        <div class="update-bar"></div>
-    </div>
-    <button slot="ar-button" id="ar-button">
-        View in your space
-    </button>
-    <div id="ar-prompt">
-        </div>
-    </model-viewer>
-   
-    <script type="module">
-        const modelViewer2 = document.querySelector("#Brain-camera-view");
-        const annotationClicked = (annotation) => {
-          let dataset = annotation.dataset;
-          modelViewer2.cameraTarget = dataset.target;
-          modelViewer2.cameraOrbit = dataset.orbit;
-          modelViewer2.fieldOfView = '45deg';
-        }
-      
-        modelViewer2.querySelectorAll('button').forEach((hotspot) => {
-          hotspot.addEventListener('click', () => annotationClicked(hotspot));
-        });
-      </script>
-</body>
-
+  <script src="./main.js" type="module">
+  </script>
+  <script type="module">
+    // To start an AR scene with webXR, we can use a handy button provided by three.js
+    // We first have to import it because it is a javascript module
+    import { ARButton } from 'https://unpkg.com/three@0.126.0/examples/jsm/webxr/ARButton.js';
     
+		let camera, scene, renderer;
+    let mesh;
+
+		init();
+		animate();
+
+		function init() {
+			const container = document.createElement('div');
+			document.body.appendChild(container);
+
+			scene = new THREE.Scene();
+
+			camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.01, 40);
+
+			renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setSize(window.innerWidth, window.innerHeight);
+      // This next line is important to to enable the renderer for WebXR
+			renderer.xr.enabled = true; // New!
+			container.appendChild(renderer.domElement);
+
+			var light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+			light.position.set(0.5, 1, 0.25);
+			scene.add(light);
+
+      const geometry = new THREE.IcosahedronGeometry(0.1, 1);
+      const material = new THREE.MeshPhongMaterial({
+        color      :  new THREE.Color("rgb(226,35,213)"),
+        shininess  :  6,
+        flatShading:  true,
+        transparent: 1,
+        opacity    : 0.8
+      });
+      
+      mesh = new THREE.Mesh(geometry, material);
+      mesh.position.set(0, 0, -0.5);
+      scene.add(mesh);
+
+			// Add the AR button to the body of the DOM
+			document.body.appendChild(ARButton.createButton(renderer));
+
+			window.addEventListener('resize', onWindowResize, false);
+		}
+
+		function onWindowResize() {
+			camera.aspect = window.innerWidth / window.innerHeight;
+			camera.updateProjectionMatrix();
+
+			renderer.setSize(window.innerWidth, window.innerHeight);
+		}
+
+		function animate() {
+			renderer.setAnimationLoop(render);
+		}
+
+		function render() {      
+			renderer.render(scene, camera);
+		}
+
+	</script>
+</body>
 </html>
