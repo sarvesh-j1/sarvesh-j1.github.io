@@ -3,8 +3,10 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.mod
 import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
 import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/GLTFLoader.js';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
+/*/import { WebXRManager } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/WebXRManager.js';/*/
+import { ARButton } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/webxr/ARButton.js';
 
-import { ARButton } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/ARButton.js';
+
 class LoadModelDemo {
   constructor() {
     this._Initialize();
@@ -26,7 +28,7 @@ class LoadModelDemo {
     }, false);
 
     const fov = 45;
-    const aspect = 1920 / 1080;
+    const aspect = window.innerWidth / window.innerHeight
     const near = 1.0;
     const far = 1000.0;
     this._camera = new THREE.PerspectiveCamera(fov, aspect, near, far);
@@ -110,8 +112,8 @@ class LoadModelDemo {
         'Ventricle',
         'FalxTentorium',
         'Diencephalon',
-        'CerebellumWhiteRight 1',
-        'CerebellumWhiteLeft 1',
+        'CerebellumWhiteRight',
+        'CerebellumWhiteLeft',
         'CerebellumGrey',
         'BrainStem',
         'CortexLeft',
@@ -127,125 +129,78 @@ class LoadModelDemo {
         }
       }
   
-      const labelContainer = document.createElement('div');
-      labelContainer.style.position = 'absolute';
-      labelContainer.style.top = '0';
-      labelContainer.style.left = '0';
-      labelContainer.style.width = '100%';
-      labelContainer.style.height = '100%';
-      labelContainer.style.pointerEvents = 'none';
-      document.body.appendChild(labelContainer);
+      const container = document.createElement('div');
+      container.style.position = 'fixed';
+      container.style.top = '50px';
+      container.style.right = '10px';
+      container.style.width = '200px';
+      container.style.height = 'calc(100vh - 60px)';
+      container.style.overflowY = 'scroll';
+      document.body.appendChild(container);
   
       meshNames.forEach((meshName) => {
         const node = model.getObjectByName(meshName);
         if (node) {
           const box = new THREE.Box3().setFromObject(node);
           const center = box.getCenter(new THREE.Vector3());
-  
-          const label = document.createElement('div');
-          label.textContent = meshName;
-          label.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-          label.style.color = 'white';
-          label.style.padding = '5px';
-          label.style.position = 'absolute';
-          label.style.transform = 'translate(-50%, -50%)';
-          label.style.left = `${(center.x + 1) * window.innerWidth / 2}px`;
-          label.style.top = `${(-center.y + 1) * window.innerHeight / 2}px`;
-          labelContainer.appendChild(label);
-  
+          box.getCenter(center);
+
           const button = document.createElement('button');
           button.textContent = meshName;
-          button.style.backgroundColor = 'gray';
+          button.style.backgroundColor = '#a5c7d4';
           button.style.color = 'white';
           button.style.border = 'none';
-          button.style.borderRadius = '50%';
+          button.style.borderRadius = '20px';
           button.style.padding = '10px';
-          button.style.width = '50px';
-          button.style.height = '50px';
-          button.style.position = 'absolute';
-          button.style.right = '10px';
-          button.style.top = `${(meshNames.indexOf(meshName) + 1) * 60}px`;
-          document.body.appendChild(button);
+          button.style.width = '150px';
+          button.style.marginBottom = '10px';
+          container.appendChild(button);
   
           button.addEventListener('click', () => {
             const node = model.getObjectByName(meshName);
             if (node) {
               visibilityMap[meshName] = !visibilityMap[meshName];
               node.visible = visibilityMap[meshName];
-              button.style.backgroundColor = visibilityMap[meshName] ? 'green' : 'gray';
+              button.style.backgroundColor = visibilityMap[meshName] ? '#a0e092' : '#a5c7d4';
             }
           });
   
-          node.userData = { label, button };
+      
+          node.userData = { button };
+         
         }
       });
   
-      const hideButton = document.createElement('button');
-      hideButton.textContent = 'Hide Names';
-      hideButton.style.backgroundColor = 'gray';
-      hideButton.style.color = 'white';
-      hideButton.style.border = 'none';
-      hideButton.style.padding = '10px';
-      hideButton.style.position = 'absolute';
-      hideButton.style.right = '10px';
-      hideButton.style.bottom = '10px';
-      document.body.appendChild(hideButton);
+      
+      const toggleContainerButton = document.createElement('button');
+      toggleContainerButton.textContent = 'Toggle Container';
+      toggleContainerButton.style.backgroundColor = '#a5c7d4';
+      toggleContainerButton.style.color = 'white';
+      toggleContainerButton.style.border = 'none';
+      toggleContainerButton.style.borderRadius = '10px';
+      toggleContainerButton.style.padding = '10px';
+      toggleContainerButton.style.position = 'fixed';
+      toggleContainerButton.style.top = '10px';
+      toggleContainerButton.style.right = '10px';
+      document.body.appendChild(toggleContainerButton);
   
-      hideButton.addEventListener('click', () => {
-        meshNames.forEach((meshName) => {
-          const node = model.getObjectByName(meshName);
-          if (node && node.userData.label) {
-            node.userData.label.style.display = 'none';
-          }
-        });
+      toggleContainerButton.addEventListener('click', () => {
+        if (container.style.display === 'none') {
+          container.style.display = 'block';
+          toggleContainerButton.textContent = 'Hide Container';
+        } else {
+          container.style.display = 'none';
+          toggleContainerButton.textContent = 'Show Container';
+        }
       });
   
-      const showButton = document.createElement('button');
-      showButton.textContent = 'Show Names';
-      showButton.style.backgroundColor = 'gray';
-      showButton.style.color = 'white';
-      showButton.style.border = 'none';
-      showButton.style.padding = '10px';
-      showButton.style.position = 'absolute';
-      showButton.style.right = '10px';
-      showButton.style.bottom = '70px';
-      document.body.appendChild(showButton);
-  
-      showButton.addEventListener('click', () => {
-        meshNames.forEach((meshName) => {
-          const node = model.getObjectByName(meshName);
-          if (node && node.userData.label) {
-            node.userData.label.style.display = 'block';
-          }
-        });
-      });
-  // Create a hotspot button
-const hotspotButton = document.createElement('button');
-hotspotButton.className = 'Hotspot';
-hotspotButton.setAttribute('slot', 'hotspot-1');
-hotspotButton.setAttribute('data-position', '0.581958580275513m -0.32791104476930477m 0.319783903766528m');
-hotspotButton.setAttribute('data-normal', '0.9984546666768878m 0.039101632876064094m 0.03948849069755169m');
-hotspotButton.setAttribute('data-visibility-attribute', 'visible');
-
-// Create a label for the hotspot
-const label = document.createElement('div');
-label.className = 'HotspotAnnotation';
-label.textContent = 'Cortex';
-
-// Add the label to the hotspot button
-hotspotButton.appendChild(label);
-
-// Add the hotspot button to the document body or a container element
-document.body.appendChild(hotspotButton);
-      const scale = 40; // Adjust this value as per your requirement
-      gltf.scene.scale.set(scale, scale, scale);
+      const scale = 60; // Adjust this value as per your requirement
+      model.scale.set(scale, scale, scale);
+      model.position.set(0, 60, 0);
       this._scene.add(model);
     });
   }
   
-  
-
-
   _OnWindowResize() {
     this._camera.aspect = window.innerWidth / window.innerHeight;
     this._camera.updateProjectionMatrix();
