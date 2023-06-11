@@ -3,9 +3,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.118/build/three.mod
 import {FBXLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/FBXLoader.js';
 import {GLTFLoader} from 'https://cdn.jsdelivr.net/npm/three@0.118.1/examples/jsm/loaders/GLTFLoader.js';
 import {OrbitControls} from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/controls/OrbitControls.js';
-/*/import { WebXRManager } from 'https://cdn.jsdelivr.net/npm/three/examples/jsm/webxr/WebXRManager.js';/*/
-import { ARButton } from 'https://cdn.jsdelivr.net/npm/three@0.118/examples/jsm/webxr/ARButton.js';
-
+import { ARButton } from './resources/webxr/ARButton.js';
 
 class LoadModelDemo {
   constructor() {
@@ -61,7 +59,15 @@ class LoadModelDemo {
     light = new THREE.AmbientLight(0xFFFFFF, 0.7);
     this._scene.add(light);
     
-    
+    const arButtonContainer = document.createElement('div');
+    arButtonContainer.id = 'arButtonContainer';
+    document.body.appendChild(arButtonContainer);
+    arButtonContainer.style.position = 'absolute';
+    arButtonContainer.style.bottom = '10px';
+    arButtonContainer.style.left = '50%';
+    this._threejs.domElement.parentElement.appendChild(arButtonContainer);
+    arButtonContainer.appendChild(ARButton.createButton(this._threejs, { requiredFeatures: ['hit-test'] }));
+
 
     const controls = new OrbitControls(
       this._camera, this._threejs.domElement);
@@ -199,13 +205,19 @@ class LoadModelDemo {
       model.position.set(0, 60, 0);
       this._scene.add(model);
     });
+    
+ 
   }
+
+
   
   _OnWindowResize() {
     this._camera.aspect = window.innerWidth / window.innerHeight;
     this._camera.updateProjectionMatrix();
     this._threejs.setSize(window.innerWidth, window.innerHeight);
   }
+
+  
 
   _RAF() {
     requestAnimationFrame((t) => {
