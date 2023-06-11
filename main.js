@@ -65,6 +65,7 @@ class LoadModelDemo {
     arButtonContainer.style.position = 'absolute';
     arButtonContainer.style.bottom = '10px';
     arButtonContainer.style.left = '50%';
+    arButtonContainer.style.transform = 'translateX(-50%)';
     this._threejs.domElement.parentElement.appendChild(arButtonContainer);
     arButtonContainer.appendChild(ARButton.createButton(this._threejs, { requiredFeatures: ['hit-test'] }));
 
